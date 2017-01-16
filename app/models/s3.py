@@ -9,6 +9,21 @@ import time
 TS_AWS_S3_BUCKET = os.environ.get('TS_AWS_S3_BUCKET')
 TS_AWS_S3_PREFIX = os.environ.get('TS_AWS_S3_PREFIX', None)
 
+def _get_alert_data_key(alert_id):
+    '''
+    Takes an alert ID and returns an S3 key path.
+    '''
+    alert_key = '/'.join(['alerts',
+                          alert_id[0:2],
+                          alert_id[2:4],
+                          alert_id
+                          ])
+
+    if TS_AWS_S3_PREFIX:
+        alert_key = '/'.join([TS_AWS_S3_PREFIX, alert_key])
+
+    return alert_key
+
 def is_available():
     '''
     Check ability to access S3 bucket.
@@ -17,6 +32,22 @@ def is_available():
     s3_client.list_objects(Bucket=TS_AWS_S3_BUCKET)
 
     return True
+
+def get_alert_by_id(alert_id):
+    '''
+    Get alert by alert ID
+    '''
+    alert_key = _get_alert_data_key(alert_id)
+    s3_client = boto3.client('s3')
+    alert_data = s3_client.get_object(
+        Bucket=TS_AWS_S3_BUCKET,
+        Key=alert_key
+    )
+
+    body = alert_data.get('Body')
+    body_text = body.read()
+
+    return json.loads(body_text)
 
 def put_webhook_data(alert):
     '''
@@ -43,15 +74,7 @@ def put_alert_data(alert):
     Put alert data in S3.
     '''
     alert_id = alert.get('id')
-
-    alert_key = '/'.join(['alerts',
-                          alert_id[0:2],
-                          alert_id[2:4],
-                          alert_id
-                          ])
-
-    if TS_AWS_S3_PREFIX:
-        alert_key = '/'.join([TS_AWS_S3_PREFIX, alert_key])
+    alert_key = _get_alert_data_key(alert_id)
 
     s3_client = boto3.client('s3')
     s3_client.put_object(

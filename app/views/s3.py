@@ -43,3 +43,17 @@ def put_alert():
 
     return jsonify(response), status_code
 
+@s3.route('/alert/<alert_id>', methods=['GET'])
+def get_alert(alert_id):
+    '''
+    Get an alert by alert ID.
+    '''
+    alert = s3_model.get_alert_by_id(alert_id)
+    status_code = 200
+    success = True
+    response = {
+        'success': success,
+        'alerts': [alert]
+    }
+
+    return jsonify(response), status_code
