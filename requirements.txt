@@ -1,0 +1,6 @@
+boto3
+Flask
+gevent
+gunicorn
+json2html
+requests
