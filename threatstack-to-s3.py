@@ -7,5 +7,5 @@ application = create_app()
 
 if __name__ == '__main__':
     # Entry point when run via Python interpreter.
-    print "== Running in debug mode =="
+    print("== Running in debug mode ==")
     application.run(host='localhost', port=8080, debug=True)
