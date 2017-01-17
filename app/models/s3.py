@@ -26,6 +26,17 @@ def _get_alert_data_key(alert_id):
 
     return alert_key
 
+def _get_webhooks_key_prefix():
+    '''
+    Return key prefix where webhook data is stored.
+    '''
+    if TS_AWS_S3_PREFIX:
+        webhooks_prefix = '/'.join([TS_AWS_S3_PREFIX, 'webhooks'])
+    else:
+        webhooks_prefix = 'webhooks'
+
+    return webhooks_prefix
+
 def is_available():
     '''
     Check ability to access S3 bucket.
@@ -60,10 +71,7 @@ def get_alerts_by_date(start, end):
     s3_client = boto3.client('s3')
 
     # We store webhooks by date and time so we search for those first.
-    if TS_AWS_S3_PREFIX:
-        webhooks_prefix = '/'.join([TS_AWS_S3_PREFIX, 'webhooks'])
-    else:
-        webhooks_prefix = 'webhooks'
+    webhooks_prefix = _get_webhooks_key_prefix()
 
     # We can only get 1000 objects at a time.  Also, list_objects() was not
     # returning a Marker on truncated responses so using list_objects_v2()
@@ -125,9 +133,8 @@ def put_webhook_data(alert):
     alert_time = time.gmtime(alert.get('created_at')/1000)
     alert_time_path = time.strftime('%Y/%m/%d/%H/%M', alert_time)
 
-    alert_key = '/'.join(['webhooks', alert_time_path, alert.get('id')])
-    if TS_AWS_S3_PREFIX:
-        alert_key = '/'.join([TS_AWS_S3_PREFIX, alert_key])
+    webhooks_prefix = _get_webhooks_key_prefix()
+    alert_key = '/'.join([webhooks_prefix, alert_time_path, alert.get('id')])
 
     s3_client = boto3.client('s3')
     s3_client.put_object(
