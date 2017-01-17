@@ -2,6 +2,8 @@
 #
 # Manipulate objects in AWS S3.
 import boto3
+import datetime
+from iso8601 import UTC
 import json
 import os
 import time
@@ -48,6 +50,73 @@ def get_alert_by_id(alert_id):
     body_text = body.read()
 
     return json.loads(body_text)
+
+def get_alerts_by_date(start, end):
+    '''
+    Get alerts between given date start and end.
+
+    both start and ed are datetime objects.
+    '''
+    s3_client = boto3.client('s3')
+
+    # We store webhooks by date and time so we search for those first.
+    if TS_AWS_S3_PREFIX:
+        webhooks_prefix = '/'.join([TS_AWS_S3_PREFIX, 'webhooks'])
+    else:
+        webhooks_prefix = 'webhooks'
+
+    # We can only get 1000 objects at a time.  Also, list_objects() was not
+    # returning a Marker on truncated responses so using list_objects_v2()
+    # here instead.
+    webhook_objects = []
+    client_continuation_token = ''
+    while True:
+        list_object_params = {
+            'Bucket': TS_AWS_S3_BUCKET,
+            'Prefix': webhooks_prefix,
+        }
+        if client_continuation_token:
+            list_object_params['ContinuationToken'] = client_continuation_token
+
+        webhook_response = s3_client.list_objects_v2(**list_object_params)
+        webhook_objects += webhook_response.get('Contents')
+
+        # Break if response tells us there is no more.
+        if webhook_response.get('IsTruncated'):
+            client_continuation_token = webhook_response.get('NextContinuationToken')
+        else:
+            break
+
+    alert_ids = []
+    for obj in webhook_objects:
+        key = obj.get('Key')
+        print(key)
+        # Remove webhook path prefix (and delimiter) and split string into
+        # time prefix and alert ID.
+        webhook_time_prefix, alert_id = key[len(webhooks_prefix) + 1:].rsplit('/', 1)
+        print(webhook_time_prefix)
+        # There are more compact ways of doing the following but I prefer to
+        # show the sequence of events.
+        #
+        # split prefix into a list of strings.
+        webhook_time_prefix_list = webhook_time_prefix.split('/')
+        print(webhook_time_prefix_list)
+        # use list comprehension to create a list of ints.  See also:
+        # map(int, webhook_time_prefix_list)
+        webhook_time_prefix_ints = [int(e) for e in webhook_time_prefix_list]
+        # use *expression syntax to pass in values as a set of arguments. Also
+        # supply tzinfo because the datetime objects we're supplied have them.
+        webhook_time = datetime.datetime(*webhook_time_prefix_ints, tzinfo=UTC)
+
+        if start < webhook_time < end:
+            alert_ids.append(alert_id)
+
+    alerts = []
+    for alert_id in alert_ids:
+        alert_data = get_alert_by_id(alert_id)
+        alerts.append(alert_data)
+
+    return alerts
 
 def put_webhook_data(alert):
     '''
