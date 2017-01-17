@@ -70,6 +70,18 @@ def _get_webhooks_key_prefix():
 
     return webhooks_prefix
 
+def _put_s3_object(key, body):
+    '''
+    Put an object in S3.
+    '''
+    s3_client = boto3.client('s3')
+    response = s3_client.put_object(
+        Body=body,
+        Bucket=TS_AWS_S3_BUCKET,
+        Key=key
+    )
+    return response
+
 def is_available():
     '''
     Check ability to access S3 bucket.
@@ -139,16 +151,11 @@ def put_webhook_data(alert):
     '''
     alert_time = time.gmtime(alert.get('created_at')/1000)
     alert_time_path = time.strftime('%Y/%m/%d/%H/%M', alert_time)
-
     webhooks_prefix = _get_webhooks_key_prefix()
     alert_key = '/'.join([webhooks_prefix, alert_time_path, alert.get('id')])
+    alert_json = json.dumps(alert)
 
-    s3_client = boto3.client('s3')
-    s3_client.put_object(
-        Body=json.dumps(alert),
-        Bucket=TS_AWS_S3_BUCKET,
-        Key=alert_key
-    )
+    _put_s3_object(alert_key, alert_json)
 
     return None
 
@@ -158,13 +165,9 @@ def put_alert_data(alert):
     '''
     alert_id = alert.get('id')
     alert_key = _get_alert_data_key(alert_id)
+    alert_json = json.dumps(alert)
 
-    s3_client = boto3.client('s3')
-    s3_client.put_object(
-        Body=json.dumps(alert),
-        Bucket=TS_AWS_S3_BUCKET,
-        Key=alert_key
-    )
+    _put_s3_object(alert_key, alert_json)
 
     return None
 
