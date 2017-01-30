@@ -5,7 +5,7 @@ import os
 import requests
 
 THREATSTACK_BASE_URL = os.environ.get('THREATSTACK_BASE_URL', 'https://app.threatstack.com/api/v1')
-THREATSTACK_API_KEY = os.environ.get('THREATSTACK_API_KEY')
+THREATSTACK_API_KEY = '6hVZ07n9V2vv21saoJTkZNiJRDdVG0OBAqRRTm8323xswyFODhqhdiwanZVorK6jkl1aMci5'
 
 def is_available():
     '''
