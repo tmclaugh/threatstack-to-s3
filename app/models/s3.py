@@ -2,14 +2,21 @@
 #
 # Manipulate objects in AWS S3.
 import boto3
+from botocore.exceptions import ClientError
 import datetime
 from iso8601 import UTC
 import json
 import os
+import sys
 import time
 
 TS_AWS_S3_BUCKET = os.environ.get('TS_AWS_S3_BUCKET')
 TS_AWS_S3_PREFIX = os.environ.get('TS_AWS_S3_PREFIX', None)
+
+class S3ClientError(Exception):
+    '''
+    S3 client communication errors.
+    '''
 
 def _get_alert_data_key(alert_id):
     '''
@@ -48,7 +55,12 @@ def _get_bucket_objects(prefix=None):
         if client_continuation_token:
             list_object_params['ContinuationToken'] = client_continuation_token
 
-        response = s3_client.list_objects_v2(**list_object_params)
+        try:
+            response = s3_client.list_objects_v2(**list_object_params)
+        except ClientError as e:
+            exc_info = sys.exc_info()
+            raise S3ClientError, S3ClientError(e), exc_info[2]
+
         objects += response.get('Contents')
 
         # Break if response tells us there is no more.
@@ -75,11 +87,16 @@ def _put_s3_object(key, body):
     Put an object in S3.
     '''
     s3_client = boto3.client('s3')
-    response = s3_client.put_object(
-        Body=body,
-        Bucket=TS_AWS_S3_BUCKET,
-        Key=key
-    )
+    try:
+        response = s3_client.put_object(
+            Body=body,
+            Bucket=TS_AWS_S3_BUCKET,
+            Key=key
+        )
+    except ClientError as e:
+        exc_info = sys.exc_info()
+        raise S3ClientError, S3ClientError(e), exc_info[2]
+
     return response
 
 def is_available():
@@ -87,7 +104,11 @@ def is_available():
     Check ability to access S3 bucket.
     '''
     s3_client = boto3.client('s3')
-    s3_client.list_objects(Bucket=TS_AWS_S3_BUCKET)
+    try:
+        s3_client.list_objects(Bucket=TS_AWS_S3_BUCKET)
+    except ClientError as e:
+        exc_info = sys.exc_info()
+        raise S3ClientError, S3ClientError(e), exc_info[2]
 
     return True
 
@@ -97,10 +118,14 @@ def get_alert_by_id(alert_id):
     '''
     alert_key = _get_alert_data_key(alert_id)
     s3_client = boto3.client('s3')
-    alert_data = s3_client.get_object(
-        Bucket=TS_AWS_S3_BUCKET,
-        Key=alert_key
-    )
+    try:
+        alert_data = s3_client.get_object(
+            Bucket=TS_AWS_S3_BUCKET,
+            Key=alert_key
+        )
+    except ClientError as e:
+        exc_info = sys.exc_info()
+        raise S3ClientError, S3ClientError(e), exc_info[2]
 
     body = alert_data.get('Body')
     body_text = body.read()
