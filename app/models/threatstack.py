@@ -3,6 +3,7 @@ Communicate with Threat Stack
 '''
 import os
 import requests
+import six
 import sys
 
 THREATSTACK_BASE_URL = os.environ.get('THREATSTACK_BASE_URL', 'https://app.threatstack.com/api/v1')
@@ -23,7 +24,6 @@ class ThreatStackAPIError(ThreatStackError):
     Base Threat Stack error.
     '''
 
-
 def is_available():
     '''
     Check connectivity to Threat Stack.
@@ -42,7 +42,14 @@ def is_available():
 
     except requests.exceptions.RequestException as e:
         exc_info = sys.exc_info()
-        raise ThreatStackRequestError, ThreatStackRequestError(e), exc_info[2]
+        if sys.version_info >= (3,0,0):
+            raise ThreatStackRequestError(e).with_traceback(exc_info[2])
+        else:
+            six.reraise(
+                ThreatStackRequestError,
+                ThreatStackRequestError(e),
+                exc_info[2]
+            )
 
     if not resp.ok:
         if 'application/json' in resp.headers.get('Content-Type'):
@@ -69,7 +76,14 @@ def get_alert_by_id(alert_id):
 
     except requests.exceptions.RequestException as e:
         exc_info = sys.exc_info()
-        raise ThreatStackRequestError, ThreatStackRequestError(e), exc_info[2]
+        if sys.version_info >= (3,0,0):
+            raise ThreatStackRequestError(e).with_traceback(exc_info[2])
+        else:
+            six.reraise(
+                ThreatStackRequestError,
+                ThreatStackRequestError(e),
+                exc_info[2]
+            )
 
     if not resp.ok:
         if 'application/json' in resp.headers.get('Content-Type'):

@@ -7,6 +7,7 @@ import datetime
 from iso8601 import UTC
 import json
 import os
+import six
 import sys
 import time
 
@@ -59,7 +60,10 @@ def _get_bucket_objects(prefix=None):
             response = s3_client.list_objects_v2(**list_object_params)
         except ClientError as e:
             exc_info = sys.exc_info()
-            raise S3ClientError, S3ClientError(e), exc_info[2]
+            if sys.version_info >= (3,0,0):
+                raise S3ClientError(e).with_traceback(exc_info[2])
+            else:
+                six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
 
         objects += response.get('Contents')
 
@@ -95,7 +99,10 @@ def _put_s3_object(key, body):
         )
     except ClientError as e:
         exc_info = sys.exc_info()
-        raise S3ClientError, S3ClientError(e), exc_info[2]
+        if sys.version_info >= (3,0,0):
+            raise S3ClientError(e).with_traceback(exc_info[2])
+        else:
+            six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
 
     return response
 
@@ -108,7 +115,10 @@ def is_available():
         s3_client.list_objects(Bucket=TS_AWS_S3_BUCKET)
     except ClientError as e:
         exc_info = sys.exc_info()
-        raise S3ClientError, S3ClientError(e), exc_info[2]
+        if sys.version_info >= (3,0,0):
+            raise S3ClientError(e).with_traceback(exc_info[2])
+        else:
+            six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
 
     return True
 
@@ -125,7 +135,10 @@ def get_alert_by_id(alert_id):
         )
     except ClientError as e:
         exc_info = sys.exc_info()
-        raise S3ClientError, S3ClientError(e), exc_info[2]
+        if sys.version_info >= (3,0,0):
+            raise S3ClientError(e).with_traceback(exc_info[2])
+        else:
+            six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
 
     body = alert_data.get('Body')
     body_text = body.read()
