@@ -53,10 +53,11 @@ def is_available():
 
     if not resp.ok:
         if 'application/json' in resp.headers.get('Content-Type'):
-            raise ThreatStackAPIError(resp.reason,
-                                      resp.status_code,
-                                      resp.json()
-                                      )
+            raise ThreatStackAPIError(
+                resp.reason,
+                resp.status_code,
+                resp.json()
+            )
         else:
             raise ThreatStackAPIError(resp.reason, resp.status_code)
 
@@ -87,10 +88,11 @@ def get_alert_by_id(alert_id):
 
     if not resp.ok:
         if 'application/json' in resp.headers.get('Content-Type'):
-            raise ThreatStackAPIError(resp.reason,
-                                      resp.status_code,
-                                      resp.json()
-                                      )
+            raise ThreatStackAPIError(
+                resp.reason,
+                resp.status_code,
+                resp.json()
+            )
         else:
             raise ThreatStackAPIError(resp.reason, resp.status_code)
 
