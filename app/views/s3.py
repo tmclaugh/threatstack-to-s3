@@ -9,7 +9,7 @@ import app.models.threatstack as threatstack_model
 
 s3 = Blueprint('s3', __name__)
 
-#decerator refers to the blueprint object.
+# Service routes.
 @s3.route('/status', methods=['GET'])
 def is_available():
     '''
@@ -80,3 +80,4 @@ def get_alert_by_id(alert_id):
     }
 
     return jsonify(response), status_code
+
