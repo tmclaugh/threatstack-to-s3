@@ -3,10 +3,12 @@ Application error handlers.
 '''
 from app.models.s3 import S3ClientError
 from app.models.threatstack import ThreatStackError
+from app.views.s3 import S3ViewError
 from flask import Blueprint, jsonify
 
 errors = Blueprint('errors', __name__)
 
+@errors.app_errorhandler(S3ViewError)
 @errors.app_errorhandler(S3ClientError)
 @errors.app_errorhandler(ThreatStackError)
 def handle_threatstack_error(error):

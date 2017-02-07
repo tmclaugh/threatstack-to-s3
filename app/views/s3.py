@@ -9,6 +9,26 @@ import app.models.threatstack as threatstack_model
 
 s3 = Blueprint('s3', __name__)
 
+class S3ViewError(Exception):
+    '''
+    Base S3 View error class.
+    '''
+
+class S3ViewDateParseError(S3ViewError):
+    '''
+    Unparseable date.
+    '''
+
+def _parse_date(date):
+    '''
+    Parse a date string and return a datetime object.
+    '''
+    try:
+        return iso8601.parse_date(date)
+    except iso8601.ParseError:
+        raise S3ViewDateParseError('Unable to parse date: {}'.format(date))
+
+
 # Service routes.
 @s3.route('/status', methods=['GET'])
 def is_available():
@@ -53,8 +73,8 @@ def get_alerts_by_form_parameters():
     end = request.form.get('end')
 
     # Convert to datetime objects
-    start_datetime = iso8601.parse_date(start)
-    end_datetime = iso8601.parse_date(end)
+    start_datetime = _parse_date(start)
+    end_datetime = _parse_date(end)
 
     alerts = s3_model.get_alerts_by_date(start_datetime, end_datetime)
     status_code = 200
