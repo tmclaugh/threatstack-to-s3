@@ -10,13 +10,16 @@ errors = Blueprint('errors', __name__)
 @errors.app_errorhandler(S3ClientError)
 @errors.app_errorhandler(ThreatStackError)
 def handle_threatstack_error(error):
+    # err.args can be variable length.  Conver to a list ans stringify
+    # contents.
+    message = [str(x) for x in error.args]
     status_code = 500
     success = False
     response = {
         'success': success,
         'error': {
             'type': error.__class__.__name__,
-            'message': str(error.args)
+            'message': message
         }
     }
 
