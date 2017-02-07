@@ -19,6 +19,11 @@ class S3ViewDateParseError(S3ViewError):
     Unparseable date.
     '''
 
+class S3ViewWebhookDataError(S3ViewError):
+    '''
+    There is an issue with the webhook data.
+    '''
+
 def _parse_date(date):
     '''
     Parse a date string and return a datetime object.
@@ -51,7 +56,29 @@ def put_alert():
     '''
     Archive Threat Stack alerts to S3.
     '''
+
     webhook_data = request.get_json()
+
+    # Check webhook data to ensure correct format.
+    if webhook_data == None:
+        # Can be caused by incorrect Content-Type.
+        msg ='No webhook data found in request: {}'.format(webhook_data)
+        raise S3ViewWebhookDataError(msg)
+
+    if not webhook_data.get('alerts'):
+        msg = 'Webhook lacks alerts: {}'.format(webhook_data)
+        raise S3ViewWebhookDataError(msg)
+
+    for alert in webhook_data.get('alerts'):
+        if not alert.get('id'):
+            msg = "alert lacks 'id' field: {}".format(webhook_data)
+            raise S3ViewWebhookDataError(msg)
+
+        if not alert.get('created_at'):
+            msg = "alert lacks 'created_at' field: {}".format(webhook_data)
+            raise S3ViewWebhookDataError(msg)
+
+    # Process alerts in webhook
     for alert in webhook_data.get('alerts'):
         alert_full = threatstack_model.get_alert_by_id(alert.get('id'))
 
