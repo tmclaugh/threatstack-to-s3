@@ -96,8 +96,8 @@ def get_alerts_by_form_parameters():
     '''
     Get an alert based on the
     '''
-    start = request.form.get('start')
-    end = request.form.get('end')
+    start = request.args.get('start') or request.form.get('start')
+    end = request.args.get('end') or request.form.get('end')
 
     # Convert to datetime objects
     start_datetime = _parse_date(start)
