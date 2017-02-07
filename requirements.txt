@@ -5,3 +5,4 @@ gunicorn
 iso8601
 json2html
 requests
+six
