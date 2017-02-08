@@ -11,7 +11,7 @@ errors = Blueprint('errors', __name__)
 @errors.app_errorhandler(S3ViewError)
 @errors.app_errorhandler(S3ClientError)
 @errors.app_errorhandler(ThreatStackError)
-def handle_threatstack_error(error):
+def handle_error(error):
     # err.args can be variable length.  Conver to a list ans stringify
     # contents.
     message = [str(x) for x in error.args]
