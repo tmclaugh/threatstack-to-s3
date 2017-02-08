@@ -59,7 +59,7 @@ def is_available():
                 resp.json()
             )
         else:
-            raise ThreatStackAPIError(resp.reason, resp.status_code)
+            raise ThreatStackRequestError(resp.reason, resp.status_code)
 
     return True
 
@@ -94,7 +94,7 @@ def get_alert_by_id(alert_id):
                 resp.json()
             )
         else:
-            raise ThreatStackAPIError(resp.reason, resp.status_code)
+            raise ThreatStackRequestError(resp.reason, resp.status_code)
 
     return resp.json()
 
