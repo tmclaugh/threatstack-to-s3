@@ -18,6 +18,7 @@ class S3ClientError(Exception):
     '''
     S3 client communication errors.
     '''
+    status_code = 500
 
 def _get_alert_data_key(alert_id):
     '''

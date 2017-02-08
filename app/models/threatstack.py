@@ -13,6 +13,7 @@ class ThreatStackError(Exception):
     '''
     Base Threat Stack error.
     '''
+    status_code = 500
 
 class ThreatStackRequestError(ThreatStackError):
     '''

@@ -15,7 +15,7 @@ def handle_threatstack_error(error):
     # err.args can be variable length.  Conver to a list ans stringify
     # contents.
     message = [str(x) for x in error.args]
-    status_code = 500
+    status_code = error.status_code
     success = False
     response = {
         'success': success,
