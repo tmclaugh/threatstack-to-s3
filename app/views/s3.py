@@ -13,6 +13,7 @@ class S3ViewError(Exception):
     '''
     Base S3 View error class.
     '''
+    status_code = 400
 
 class S3ViewDateParseError(S3ViewError):
     '''
