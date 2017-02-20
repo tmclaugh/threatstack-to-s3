@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/bin/sh -xe
+
+# This let's us see errors.
+exec 2>&1
 
 ln -s {{pkg.path}}/app {{pkg.svc_var_path}}
 ln -s {{pkg.path}}/gunicorn.conf.py {{pkg.svc_var_path}}
