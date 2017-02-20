@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd {{pkg.svc_var_path}}
+
+gunicorn -c gunicorn.conf.py --bind 0.0.0.0:8080 threatstack-to-s3
