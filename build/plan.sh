@@ -4,8 +4,8 @@ pkg_version=0.1.0
 pkg_origin=tmclaugh
 pkg_maintainer='Tom McLaughlin'
 pkg_license=('MIT')
-pkg_build_deps=(core/virtualenv)
-pkg_deps=(core/coreutils core/python2)
+pkg_build_deps=(core/python2 core/virtualenv)
+pkg_deps=(core/coreutils)
 pkg_exports=([http]=8080)
 pkg_expose=(http)
 
