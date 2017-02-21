@@ -4,6 +4,7 @@ pkg_version=0.1.0
 pkg_origin=tmclaugh
 pkg_maintainer='Tom McLaughlin'
 pkg_license=('MIT')
+pkg_upstream_url='https://github.com/threatstack/threatstack-to-s3'
 pkg_build_deps=(core/python2 core/virtualenv)
 pkg_deps=(core/coreutils)
 pkg_exports=([http]=8080)
