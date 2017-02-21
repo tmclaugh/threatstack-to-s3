@@ -1,13 +1,13 @@
 '''
 Communicate with Threat Stack
 '''
-import os
+import config
 import requests
 import six
 import sys
 
-THREATSTACK_BASE_URL = os.environ.get('THREATSTACK_BASE_URL', 'https://app.threatstack.com/api/v1')
-THREATSTACK_API_KEY = os.environ.get('THREATSTACK_API_KEY')
+THREATSTACK_API_KEY = config.THREATSTACK_API_KEY
+THREATSTACK_BASE_URL = config.THREATSTACK_BASE_URL
 
 class ThreatStackError(Exception):
     '''
