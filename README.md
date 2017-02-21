@@ -53,6 +53,9 @@ $ hab pkg build build/
 
 # Export a Docker container
 $ hab pkg export docker <your_docker_org>/threatstack-to-s3
+
+# Export a tarball with habitat runtime. (optional)
+$ hab pkg export tar tmclaugh/threatstack-to-s3
 ```
 
 Building in Hab studio (OS X):
@@ -63,11 +66,15 @@ $ hab studio enter
 # Builds Habitat .hart package
 [2][default:/src/build:0]# build
 
-# Export a Docker container.
+# Export a Docker container. (optional)
 [3][default:/src/build:0]# hab pkg export docker <your_docker_org>/threatstack-to-s3
+
+# Export a tarball with habitat runtime. (optional)
+[3][default:/src/build:0]# hab pkg export tar tmclaugh/threatstack-to-s3
 ```
 
 ## Deploy
+### Permissions
 The host running this service needs the following AWS IAM policy for S3 bucket access where *s3_bucket* is the name of the bucket set by TS_AWS_S3_BUCKET:
 ```
 {
@@ -95,6 +102,20 @@ The host running this service needs the following AWS IAM policy for S3 bucket a
         }
     ]
 }
+```
+
+### Starting service.
+If you’re using Docker then follow your typical Docker container deployment steps.  If you’re using a native Habitat package or Habitat tarball then do the following.
+
+* Habitat native package.  (Requires installing Habitat on host.)
+```
+$ sudo hab start tmclaugh-threatstack-to-s3-{version}-x86_64-linux.hart
+```
+
+* Habitat tarball.  (Contains Habitat with it.)
+```
+$ sudo tar zxvf {package}.tar.gz -C /
+$ sudo /hab/bin/hab tmclaugh/threatstack-to-s3
 ```
 
 ## S3 Layout
