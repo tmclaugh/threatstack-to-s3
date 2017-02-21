@@ -3,16 +3,16 @@
 # Manipulate objects in AWS S3.
 import boto3
 from botocore.exceptions import ClientError
+import config
 import datetime
 from iso8601 import UTC
 import json
-import os
 import six
 import sys
 import time
 
-TS_AWS_S3_BUCKET = os.environ.get('TS_AWS_S3_BUCKET')
-TS_AWS_S3_PREFIX = os.environ.get('TS_AWS_S3_PREFIX', None)
+TS_AWS_S3_BUCKET = config.TS_AWS_S3_BUCKET
+TS_AWS_S3_PREFIX = config.TS_AWS_S3_PREFIX
 
 class S3ClientError(Exception):
     '''
