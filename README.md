@@ -34,6 +34,47 @@ If performing debugging you may wish to run the app directly instead of via Guni
 python threatstack-to-s3.py
 ```
 
+## Build
+This service uses [Chef Habitat](http://www.habitat.sh) to build deployable packages.  Habitat supports the following package formats natively:
+* Habitat package (.hart)
+* tar
+* docker
+* aci
+* mesos
+
+See the following resources for getting started with Habitat.
+* https://www.habitat.sh/docs/overview/
+* https://www.habitat.sh/tutorial/
+
+Building packages:
+```
+# Builds Habitat .hart package
+$ hab pkg build build/
+
+# Export a Docker container
+$ hab pkg export docker <your_docker_org>/threatstack-to-s3
+
+# Export a tarball with habitat runtime. (optional)
+$ hab pkg export tar tmclaugh/threatstack-to-s3
+```
+
+Building in Hab studio (OS X):
+```
+$ hab studio enter
+[1][default:/src:0]# cd build/
+
+# Builds Habitat .hart package
+[2][default:/src/build:0]# build
+
+# Export a Docker container. (optional)
+[3][default:/src/build:0]# hab pkg export docker <your_docker_org>/threatstack-to-s3
+
+# Export a tarball with habitat runtime. (optional)
+[3][default:/src/build:0]# hab pkg export tar tmclaugh/threatstack-to-s3
+```
+
+## Deploy
+### Permissions
 The host running this service needs the following AWS IAM policy for S3 bucket access where *s3_bucket* is the name of the bucket set by TS_AWS_S3_BUCKET:
 ```
 {
@@ -61,6 +102,20 @@ The host running this service needs the following AWS IAM policy for S3 bucket a
         }
     ]
 }
+```
+
+### Starting service.
+If you’re using Docker then follow your typical Docker container deployment steps.  If you’re using a native Habitat package or Habitat tarball then do the following.
+
+* Habitat native package.  (Requires installing Habitat on host.)
+```
+$ sudo hab start tmclaugh-threatstack-to-s3-{version}-x86_64-linux.hart
+```
+
+* Habitat tarball.  (Contains Habitat with it.)
+```
+$ sudo tar zxvf {package}.tar.gz -C /
+$ sudo /hab/bin/hab tmclaugh/threatstack-to-s3
 ```
 
 ## S3 Layout
