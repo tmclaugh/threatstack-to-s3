@@ -48,7 +48,10 @@ def is_available():
     ts_info = {'success': ts_status}
 
     status_code = 200
-    success = True
+    if s3_status and ts_status:
+        success = True
+    else:
+        success = False
 
     return jsonify(success=success, s3=s3_info, threatstack=ts_info), status_code
 
