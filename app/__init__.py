@@ -1,4 +1,10 @@
+'''
+Initialize flask components.
+'''
 from flask import Flask
+import logging
+
+_logger = logging.getLogger(__name__)
 
 def _initialize_blueprints(application):
     '''

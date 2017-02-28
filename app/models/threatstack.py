@@ -1,28 +1,31 @@
 '''
 Communicate with Threat Stack
 '''
+from app.errors import AppBaseError
 import config
+import logging
 import requests
 import six
 import sys
 
+_logger = logging.getLogger(__name__)
+
 THREATSTACK_API_KEY = config.THREATSTACK_API_KEY
 THREATSTACK_BASE_URL = config.THREATSTACK_BASE_URL
 
-class ThreatStackError(Exception):
+class ThreatStackError(AppBaseError):
     '''
     Base Threat Stack error.
     '''
-    status_code = 500
 
 class ThreatStackRequestError(ThreatStackError):
     '''
-    Base Threat Stack error.
+    Threat Stack request communication error.
     '''
 
 class ThreatStackAPIError(ThreatStackError):
     '''
-    Base Threat Stack error.
+    Threat Stack API error.
     '''
 
 def is_available():

@@ -1,19 +1,24 @@
 '''
 Application error handlers.
 '''
-from app.models.s3 import S3ClientError
-from app.models.threatstack import ThreatStackError
-from app.views.s3 import S3ViewError
 from flask import Blueprint, jsonify
+import logging
+
+_logger = logging.getLogger(__name__)
+
+class AppBaseError(Exception):
+    '''
+    Base exception class for this service.
+    '''
+    status_code = 500
 
 errors = Blueprint('errors', __name__)
 
-@errors.app_errorhandler(S3ViewError)
-@errors.app_errorhandler(S3ClientError)
-@errors.app_errorhandler(ThreatStackError)
+@errors.app_errorhandler(AppBaseError)
 def handle_error(error):
     # err.args can be variable length.  Conver to a list ans stringify
     # contents.
+    log_exception(error)
     message = [str(x) for x in error.args]
     status_code = error.status_code
     success = False
@@ -29,6 +34,7 @@ def handle_error(error):
 
 @errors.app_errorhandler(Exception)
 def handle_unexpected_error(error):
+    log_exception(error)
     status_code = 500
     success = False
     response = {
@@ -40,3 +46,10 @@ def handle_unexpected_error(error):
     }
 
     return jsonify(response), status_code
+
+def log_exception(error):
+    '''
+    Log our exception.
+    '''
+    _logger.exception(error)
+

@@ -1,24 +1,27 @@
-# AWS S3 Model
-#
-# Manipulate objects in AWS S3.
+'''
+AWS S3 communication
+'''
+from app.errors import AppBaseError
 import boto3
 from botocore.exceptions import ClientError
 import config
 import datetime
 from iso8601 import UTC
 import json
+import logging
 import six
 import sys
 import time
 
+_logger = logging.getLogger(__name__)
+
 TS_AWS_S3_BUCKET = config.TS_AWS_S3_BUCKET
 TS_AWS_S3_PREFIX = config.TS_AWS_S3_PREFIX
 
-class S3ClientError(Exception):
+class S3ClientError(AppBaseError):
     '''
     S3 client communication errors.
     '''
-    status_code = 500
 
 def _get_alert_data_key(alert_id):
     '''
