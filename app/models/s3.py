@@ -7,9 +7,12 @@ import config
 import datetime
 from iso8601 import UTC
 import json
+import logging
 import six
 import sys
 import time
+
+_logger = logging.getLogger(__name__)
 
 TS_AWS_S3_BUCKET = config.TS_AWS_S3_BUCKET
 TS_AWS_S3_PREFIX = config.TS_AWS_S3_PREFIX

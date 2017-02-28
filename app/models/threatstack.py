@@ -2,9 +2,12 @@
 Communicate with Threat Stack
 '''
 import config
+import logging
 import requests
 import six
 import sys
+
+_logger = logging.getLogger(__name__)
 
 THREATSTACK_API_KEY = config.THREATSTACK_API_KEY
 THREATSTACK_BASE_URL = config.THREATSTACK_BASE_URL
