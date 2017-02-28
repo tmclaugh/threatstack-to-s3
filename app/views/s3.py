@@ -29,6 +29,19 @@ class S3ViewWebhookDataError(S3ViewError):
     There is an issue with the webhook data.
     '''
 
+def _get_webhook_data(request):
+    '''
+    Handle Threat Stack vs. AWS SNS messages.
+    '''
+    request_data = request.get_json()
+    webhook_data = None
+    if 'TopicArn' in request_data.keys():
+        webhook_data = request_data.get('Message')
+    else:
+        webhook_data = request_data
+
+    return webhook_data
+
 def _parse_date(date):
     '''
     Parse a date string and return a datetime object.
@@ -65,7 +78,8 @@ def put_alert():
     Archive Threat Stack alerts to S3.
     '''
 
-    webhook_data = request.get_json()
+    # could be getting a message from TS or SNS.
+    webhook_data = _get_webhook_data(request)
 
     # Check webhook data to ensure correct format.
     if webhook_data == None:
