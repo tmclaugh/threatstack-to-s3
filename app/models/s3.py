@@ -1,6 +1,6 @@
-# AWS S3 Model
-#
-# Manipulate objects in AWS S3.
+'''
+AWS S3 communication
+'''
 from app.errors import AppBaseError
 import boto3
 from botocore.exceptions import ClientError

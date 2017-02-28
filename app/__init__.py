@@ -1,3 +1,6 @@
+'''
+Initialize flask components.
+'''
 from flask import Flask
 import logging
 
