@@ -2,6 +2,7 @@
 API to archive alerts from Threat Stack to S3
 '''
 
+from app.errors import AppBaseError
 import app.models.s3 as s3_model
 import app.models.threatstack as threatstack_model
 from flask import Blueprint, jsonify, request
@@ -12,7 +13,7 @@ _logger = logging.getLogger(__name__)
 
 s3 = Blueprint('s3', __name__)
 
-class S3ViewError(Exception):
+class S3ViewError(AppBaseError):
     '''
     Base S3 View error class.
     '''
