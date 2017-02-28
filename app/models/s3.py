@@ -4,6 +4,7 @@ AWS S3 communication
 from app.errors import AppBaseError
 import boto3
 from botocore.exceptions import ClientError
+from botocore.vendored.requests.exceptions import RequestException
 import config
 import datetime
 from iso8601 import UTC
@@ -68,6 +69,12 @@ def _get_bucket_objects(prefix=None):
                 raise S3ClientError(e).with_traceback(exc_info[2])
             else:
                 six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
+        except RequestException as e:
+            exc_info = sys.exc_info()
+            if sys.version_info >= (3,0,0):
+                raise S3ClientError('Failure to communicate with S3').with_traceback(exc_info[2])
+            else:
+                six.reraise(S3ClientError, S3ClientError('Failure to communicate with S3'), exc_info[2])
 
         objects += response.get('Contents')
 
@@ -107,6 +114,12 @@ def _put_s3_object(key, body):
             raise S3ClientError(e).with_traceback(exc_info[2])
         else:
             six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
+    except RequestException as e:
+        exc_info = sys.exc_info()
+        if sys.version_info >= (3,0,0):
+            raise S3ClientError('Failure to communicate with S3').with_traceback(exc_info[2])
+        else:
+            six.reraise(S3ClientError, S3ClientError('Failure to communicate with S3'), exc_info[2])
 
     return response
 
@@ -123,6 +136,12 @@ def is_available():
             raise S3ClientError(e).with_traceback(exc_info[2])
         else:
             six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
+    except RequestException as e:
+        exc_info = sys.exc_info()
+        if sys.version_info >= (3,0,0):
+            raise S3ClientError('Failure to communicate with S3').with_traceback(exc_info[2])
+        else:
+            six.reraise(S3ClientError, S3ClientError('Failure to communicate with S3'), exc_info[2])
 
     return True
 
@@ -143,6 +162,13 @@ def get_alert_by_id(alert_id):
             raise S3ClientError(e).with_traceback(exc_info[2])
         else:
             six.reraise(S3ClientError, S3ClientError(e), exc_info[2])
+    except RequestException as e:
+        exc_info = sys.exc_info()
+        if sys.version_info >= (3,0,0):
+            raise S3ClientError('Failure to communicate with S3').with_traceback(exc_info[2])
+        else:
+            six.reraise(S3ClientError, S3ClientError('Failure to communicate with S3'), exc_info[2])
+
 
     body = alert_data.get('Body')
     body_text = body.read()
