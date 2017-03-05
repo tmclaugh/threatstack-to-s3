@@ -129,7 +129,10 @@ def is_available():
     '''
     s3_client = boto3.client('s3')
     try:
-        s3_client.list_objects(Bucket=TS_AWS_S3_BUCKET)
+        kwargs = {'Bucket': TS_AWS_S3_BUCKET}
+        if TS_AWS_S3_PREFIX:
+            kwargs['Prefix'] = TS_AWS_S3_PREFIX
+        s3_client.list_objects(**kwargs)
     except ClientError as e:
         exc_info = sys.exc_info()
         if sys.version_info >= (3,0,0):
