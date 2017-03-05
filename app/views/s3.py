@@ -8,6 +8,7 @@ import app.models.threatstack as threatstack_model
 from flask import Blueprint, jsonify, request
 import iso8601
 import logging
+import requests
 
 _logger = logging.getLogger(__name__)
 
@@ -35,8 +36,9 @@ def _get_webhook_data(request):
     '''
     request_data = request.get_json()
     webhook_data = None
-    if 'TopicArn' in request_data.keys():
-        webhook_data = request_data.get('Message')
+    if 'TopicArn' in request_data.keys() and 'Message' in request_data.keys():
+        if type(request_data['Message']) == dict:
+            webhook_data = request_data.get('Message')
     else:
         webhook_data = request_data
 
@@ -51,6 +53,19 @@ def _parse_date(date):
     except iso8601.ParseError:
         raise S3ViewDateParseError('Unable to parse date: {}'.format(date))
 
+def _confirm_aws_sns_subscription(request):
+    '''
+    Confirm an SNS subscription
+    '''
+    request_data = request.get_json()
+    confirmation_url = request_data.get('SubscribeURL')
+    confirmation_response = requests.get(confirmation_url)
+    if confirmation_response.ok:
+        success = True
+    else:
+        success = False
+
+    return jsonify({'success': success}), confirmation_response.status_code
 
 # Service routes.
 @s3.route('/status', methods=['GET'])
@@ -77,8 +92,9 @@ def put_alert():
     '''
     Archive Threat Stack alerts to S3.
     '''
-
     # could be getting a message from TS or SNS.
+    if request.headers['X-Amz-Sns-Message-Type'] == 'SubscriptionConfirmation':
+        return _confirm_aws_sns_subscription(request)
     webhook_data = _get_webhook_data(request)
 
     # Check webhook data to ensure correct format.
