@@ -5,7 +5,7 @@ API to archive alerts from Threat Stack to S3
 from app.errors import AppBaseError
 import app.models.s3 as s3_model
 import app.models.threatstack as threatstack_model
-import boto3
+from app.sns import check_aws_sns
 from flask import Blueprint, jsonify, request
 import iso8601
 import logging
@@ -30,20 +30,6 @@ class S3ViewWebhookDataError(S3ViewError):
     There is an issue with the webhook data.
     '''
 
-def _get_webhook_data(request):
-    '''
-    Handle Threat Stack vs. AWS SNS messages.
-    '''
-    request_data = request.get_json()
-    webhook_data = None
-    if 'TopicArn' in request_data.keys() and 'Message' in request_data.keys():
-        if type(request_data['Message']) == dict:
-            webhook_data = request_data.get('Message')
-    else:
-        webhook_data = request_data
-
-    return webhook_data
-
 def _parse_date(date):
     '''
     Parse a date string and return a datetime object.
@@ -52,23 +38,6 @@ def _parse_date(date):
         return iso8601.parse_date(date)
     except iso8601.ParseError:
         raise S3ViewDateParseError('Unable to parse date: {}'.format(date))
-
-def _confirm_aws_sns_subscription(confirmation):
-    '''
-    Confirm an SNS subscription
-    '''
-    _logger.debug('SubscriptionConfirmation: {}'.format(confirmation))
-    sns_client = boto3.client('sns')
-    kwargs = {'TopicArn': confirmation['TopicArn'],
-              'Token': confirmation['Token'],
-              'AuthenticateOnUnsubscribe': 'true'}
-    # If we fail an error is thrown.  Not going to return anything.  No need
-    # since we should just be talking to another system that won't care what
-    # we say.
-    resp = sns_client.confirm_subscription(**kwargs)
-    _logger.debug('SubscriptionArn: {}'.format(resp.get('SubscriptionArn')))
-
-    return
 
 # Service routes.
 @s3.route('/status', methods=['GET'])
@@ -91,15 +60,13 @@ def is_available():
     return jsonify(success=success, s3=s3_info, threatstack=ts_info), status_code
 
 @s3.route('/alert', methods=['POST'])
+@check_aws_sns
 def put_alert():
     '''
     Archive Threat Stack alerts to S3.
     '''
     # could be getting a message from TS or SNS.
-    if request.headers['X-Amz-Sns-Message-Type'] == 'SubscriptionConfirmation':
-        _confirm_aws_sns_subscription(request.get_json())
-        return jsonify({}), 200
-    webhook_data = _get_webhook_data(request)
+    webhook_data = request.get_json()
 
     # Check webhook data to ensure correct format.
     if webhook_data == None:
