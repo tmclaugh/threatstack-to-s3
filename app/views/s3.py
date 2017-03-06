@@ -65,8 +65,8 @@ def put_alert():
     '''
     Archive Threat Stack alerts to S3.
     '''
-    # could be getting a message from TS or SNS.
-    webhook_data = request.get_json()
+    # SNS doesn't set Content-Type to application/json.
+    webhook_data = request.get_json(force=True)
 
     # Check webhook data to ensure correct format.
     if webhook_data == None:
