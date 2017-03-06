@@ -65,12 +65,24 @@ def check_aws_sns(func):
             else:
                 request_data = request.get_json(force=True)
                 try:
-                    webhook_data = request_data.get('Message')
-                    request.data = json.loads(webhook_data)
+                    webhook_data = request_data.get('Message')  # This is a string os JSON inside the JSON doc.
                 except json.JSONDecoderError:
                     _logger.info('SNS Message: {}'.format(request_data))
                     msg = 'Invalid request: {}'.format(request_data)
                     raise SNSMessageInvalidError(msg)
+
+                # You can bypass _cached_json with get_json() but that relies
+                # on get_data() which allows you to disable caching results
+                # but not from using _cached_data if it exists.
+                #
+                # We'd have to manipulate the stream if we did a straight
+                # delattr() here.
+                setattr(request, '_cached_data', webhook_data)
+
+                # This way we don't have to worry about how we call get_json()
+                # after this.
+                if '_cached_json' in dir(request):
+                    delattr(request, '_cached_json')
 
         return func(*args, **kwargs)
     return decorated_function
