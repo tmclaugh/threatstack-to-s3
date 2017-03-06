@@ -5,10 +5,10 @@ API to archive alerts from Threat Stack to S3
 from app.errors import AppBaseError
 import app.models.s3 as s3_model
 import app.models.threatstack as threatstack_model
+import boto3
 from flask import Blueprint, jsonify, request
 import iso8601
 import logging
-import requests
 
 _logger = logging.getLogger(__name__)
 
@@ -53,19 +53,22 @@ def _parse_date(date):
     except iso8601.ParseError:
         raise S3ViewDateParseError('Unable to parse date: {}'.format(date))
 
-def _confirm_aws_sns_subscription(request):
+def _confirm_aws_sns_subscription(confirmation):
     '''
     Confirm an SNS subscription
     '''
-    request_data = request.get_json()
-    confirmation_url = request_data.get('SubscribeURL')
-    confirmation_response = requests.get(confirmation_url)
-    if confirmation_response.ok:
-        success = True
-    else:
-        success = False
+    _logger.debug('SubscriptionConfirmation: {}'.format(confirmation))
+    sns_client = boto3.client('sns')
+    kwargs = {'TopicArn': confirmation['TopicArn'],
+              'Token': confirmation['Token'],
+              'AuthenticateOnUnsubscribe': 'true'}
+    # If we fail an error is thrown.  Not going to return anything.  No need
+    # since we should just be talking to another system that won't care what
+    # we say.
+    resp = sns_client.confirm_subscription(**kwargs)
+    _logger.debug('SubscriptionArn: {}'.format(resp.get('SubscriptionArn')))
 
-    return jsonify({'success': success}), confirmation_response.status_code
+    return
 
 # Service routes.
 @s3.route('/status', methods=['GET'])
@@ -94,7 +97,8 @@ def put_alert():
     '''
     # could be getting a message from TS or SNS.
     if request.headers['X-Amz-Sns-Message-Type'] == 'SubscriptionConfirmation':
-        return _confirm_aws_sns_subscription(request)
+        _confirm_aws_sns_subscription(request.get_json())
+        return jsonify({}), 200
     webhook_data = _get_webhook_data(request)
 
     # Check webhook data to ensure correct format.
