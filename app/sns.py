@@ -1,5 +1,5 @@
 '''
-Utility and helper functions.
+Handle SNS compatibility.
 '''
 from app.errors import AppBaseError
 import boto3
