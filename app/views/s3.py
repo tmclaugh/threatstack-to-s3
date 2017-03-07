@@ -5,6 +5,7 @@ API to archive alerts from Threat Stack to S3
 from app.errors import AppBaseError
 import app.models.s3 as s3_model
 import app.models.threatstack as threatstack_model
+from app.sns import check_aws_sns
 from flask import Blueprint, jsonify, request
 import iso8601
 import logging
@@ -38,7 +39,6 @@ def _parse_date(date):
     except iso8601.ParseError:
         raise S3ViewDateParseError('Unable to parse date: {}'.format(date))
 
-
 # Service routes.
 @s3.route('/status', methods=['GET'])
 def is_available():
@@ -60,12 +60,13 @@ def is_available():
     return jsonify(success=success, s3=s3_info, threatstack=ts_info), status_code
 
 @s3.route('/alert', methods=['POST'])
+@check_aws_sns
 def put_alert():
     '''
     Archive Threat Stack alerts to S3.
     '''
-
-    webhook_data = request.get_json()
+    # SNS doesn't set Content-Type to application/json.
+    webhook_data = request.get_json(force=True)
 
     # Check webhook data to ensure correct format.
     if webhook_data == None:
