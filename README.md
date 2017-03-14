@@ -129,7 +129,7 @@ aws s3 ls --recursive s3://<bucket>
 ```
 
 ## API
-### POST https://_host_/api/v1/s3/alert
+### POST https://[host]/threatstack-to-s3/api/v1/s3/alert
 Post a JSON doc from Threat Stack and archive it to S3.  JSON doc will be in the following format.  __NOTE__: A webhook may contain multiple alerts but this service will store each one individually.
 ```
 {
@@ -146,9 +146,9 @@ Post a JSON doc from Threat Stack and archive it to S3.  JSON doc will be in the
   [
 }
 ```
-### GET https://_host_/api/v1/s3/alert
+### GET https://_host_/threatstack-to-s3/api/v1/s3/alert
 When provided both `start` and `end` form data in iso8601 format return the list of alerts data from that date range.
 
-### GET https://_host_/api/v1/s3/alert/_alert_id_
+### GET https://_host_/threatstack-to-s3/api/v1/s3/alert/_alert_id_
 Return the alert data for the given alert ID.
 
