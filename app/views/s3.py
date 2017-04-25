@@ -45,6 +45,7 @@ def is_available():
     '''
     Test that Threat Stack and S3 bucket are reachable.
     '''
+    _logger.info('{}: {}'.format(request.method, request.path))
     s3_status = s3_model.is_available()
     s3_info = {'success': s3_status}
 
@@ -65,6 +66,9 @@ def put_alert():
     '''
     Archive Threat Stack alerts to S3.
     '''
+    _logger.info('{}: {} - {}'.format(request.method,
+                                      request.path,
+                                      request.data))
     # SNS doesn't set Content-Type to application/json.
     webhook_data = request.get_json(force=True)
 
@@ -108,6 +112,10 @@ def get_alerts_by_form_parameters():
     start = request.args.get('start') or request.form.get('start')
     end = request.args.get('end') or request.form.get('end')
 
+    _logger.info('{}: {} - {}'.format(request.method,
+                                      request.path,
+                                      request.values))
+
     # Convert to datetime objects
     start_datetime = _parse_date(start)
     end_datetime = _parse_date(end)
@@ -127,6 +135,7 @@ def get_alert_by_id(alert_id):
     '''
     Get an alert by alert ID.
     '''
+    _logger.info('{}: {}'.format(request.method, request.path))
     alert = s3_model.get_alert_by_id(alert_id)
     status_code = 200
     success = True
