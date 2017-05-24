@@ -125,7 +125,7 @@ $ hab pkg build build/
 $ hab pkg export docker <your_docker_org>/threatstack-to-s3
 
 # Export a tarball with habitat runtime. (optional)
-$ hab pkg export tar tmclaugh/threatstack-to-s3
+$ hab pkg export tar <your_docker_org>/threatstack-to-s3
 ```
 
 Building in Hab studio (OS X):
@@ -140,7 +140,7 @@ $ hab studio enter
 [3][default:/src/build:0]# hab pkg export docker <your_docker_org>/threatstack-to-s3
 
 # Export a tarball with habitat runtime. (optional)
-[3][default:/src/build:0]# hab pkg export tar tmclaugh/threatstack-to-s3
+[3][default:/src/build:0]# hab pkg export tar <your_docker_org>/threatstack-to-s3
 ```
 
 ### Run
@@ -148,12 +148,12 @@ If you’re using Docker then follow your typical Docker container deployment st
 
 * Habitat native package.  (Requires installing Habitat on host.)
 ```
-$ sudo hab start tmclaugh-threatstack-to-s3-{version}-x86_64-linux.hart
+$ sudo hab start <your_docker_org>-threatstack-to-s3-{version}-x86_64-linux.hart
 ```
 
 * Habitat tarball.  (Contains Habitat with it.)
 ```
 $ sudo tar zxvf {package}.tar.gz -C /
-$ sudo /hab/bin/hab tmclaugh/threatstack-to-s3
+$ sudo /hab/bin/hab <your_docker_org>/threatstack-to-s3
 ```
 
