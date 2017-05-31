@@ -10,6 +10,7 @@ after_success:
 - zip -r dist/threatstack-to-s3.zip . -x '.git/*' -x 'dist/*'
 - cp deploy/cloudformation.json dist/threatstack-to-s3.json
 deploy:
+  skip_cleanup: true
   provider: s3
   access_key_id:
     secure: "peDowmYc5T0O1JCKUWeg2r8gvhBLu2rl0fox6yQZCxnhg0VarpPxz1eIG+uR/c1tihAB7npDvSrcwgc9TeHl7zQ61ghTuXrWeWn6IqA8uNy7KasBNWPAzkNs79Xy65qvCUs7vhFy430yJFxNMK8xX4LmpBCaKdKRxwHV609sA0iSFbCEneDqPtHlk2LGcebTwUbuUlWg3j5Mc6FL31xBYaQKLeoyGqOGuUCDInzqb0hXOhMYJTsZDDWYv3MUTv8WaXn/oCCJ3jrcYXqIdFpavt7tFGjespj/NnLbAPdSFBLdPZFJZqKYmROJY8U2K8OyoWxT8pH11UM0CAue/dTrIVcjr9g8EgQx0Waz65/Uka48kgjllVe4q3qvVa4ErcUe9yaIx7Qs8FSl9ZA3cI6iKArXvMppaMnM/15zfkw/owkeO4EP5vDqLxKpeou7mXwV+/gpRiPwsJHWP9aMG/mx2SDtj8MEjHwJ5VLiB7QORcb0XMvlyk4EEsjOFFiOjex25nGqWB43F1BIFo4SGyXvQFyCPYzp96rpSH3vCqIT+YvlCe1TSAiaAtyjzTUsBzeEKn+4DxcoD+VgWK03YvWK7mN6iKHHKKulVW/60prIsPUJwdKikuuaFwDsa8aSEJePEqofdyIZCa4IvcX0MnE2bbMqG/8T+EWFmExQWkAtp7E="
