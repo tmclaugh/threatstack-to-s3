@@ -19,6 +19,6 @@ deploy:
   bucket: ts-demo-lamba-deploys
   local-dir: 'dist'
   upload-dir: 'no'
-  acl: public
+  acl: public_read
   on:
     repo: threatstack/threatstack-to-s3
