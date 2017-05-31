@@ -1,4 +1,4 @@
-# threatstack-to-s3
+# threatstack-to-s3 [![Build Status](https://travis-ci.org/threatstack/threatstack-to-s3.svg?branch=master)](https://travis-ci.org/threatstack/threatstack-to-s3)
 Takes a Threat Stack web hook request and archives the alert to S3.
 
 **NOTE: This code is provided as an example and without support for creating services that use Threat Stack webhooks to perform actions within an environment.**
