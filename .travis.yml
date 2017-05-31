@@ -18,7 +18,6 @@ deploy:
     secure: YkfXt9mle/QoIRLBbdhuRB2XS9KS9uCsSI/1g+w7Yedv69exLVj14WgPrUb8WaE/TvSFeysBKmolbe3DgpfE9EFkLBv6+/c68g1c9QgvCTMsrysp06l1X/Ol3iXyHLbiqyrwgmhcoHHewFG0wql+30sm0JVmDpDqVEnaPj94a9vvG9zIXXwiEGJXN2gYvN+mHT18bZfcUloFcArELrE8thqhQGfW4NUyP4DPLgI+R9ewWMeHkEYJEpjxRNSiM2BBHtezoQpiH+WG7qTsDPgGUVgAENf9hF/oMXgRdKK2+SpRgfn+VtUMHn3BvicTA01p++wWIacLFvxiqMPgmDKdOKbTo9cm9Qemy8KvArIZyveK3+ZQD5Cnyifa7wsi3aXsm/0ILscVxVH64eSL1BUBoPpuKu3kCZoYzgvhsRRtyBiUabOYQaYOSw41IwNTLHUApLovjqjQ+Nu9U7+put6/XfE/lODfDtJUbIb/eF6wZIz5qnr2JYZRWFj8BwHr3Q03aI4jziR/FMul0Aa6A902lxIUObuUwgADpHGMkK1D1C9TuOMdqZDJpdwgRFtga3SOSdnhYlT7wcsdiFzOq4atr6sBQZYDbuW5FzrZ6OkOZa2tpcH+KiythA7dLu0Qf3ojNehRZqt1e8WJp3LxvmQq/OepObCt/X09+Uepc8Vz2Q4=
   bucket: ts-demo-lamba-deploys
   local-dir: dist
-  upload-dir: 'no'
   acl: public_read
   on:
     repo: threatstack/threatstack-to-s3
