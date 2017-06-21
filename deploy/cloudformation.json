@@ -291,6 +291,35 @@
             },
             "Condition": ""
         },
+        "LambdaInvokeUpdater": {
+            "Type": "Custom::LambdaUpdaterInvoke",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::ImportValue": {
+                        "Fn::Sub": "${SvcIntegrationsCFStack}-UpdaterLambdaArn"
+                    }
+                },
+                "FunctionName": {
+                    "Ref": "AppName"
+                },
+                "FunctionZipFileUrl": {
+                    "Fn::Sub": "https://s3.amazonaws.com/straycat-dhs-org-straycat-lambda-deploys/${AppName}.zip"
+                },
+                "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
+            }
+        },
+        "LambdaVersion": {
+            "Type": "AWS::Lambda::Version",
+            "Properties": {
+                "FunctionName": {
+                    "Ref": "LambdaFunction"
+                },
+                "CodeSha256": "%%SHA256%%"
+            },
+            "DependsOn": [
+               "LambdaInvokeUpdater"
+            ]
+        },
         "SnsSubscription": {
             "Type": "AWS::SNS::Subscription",
             "Properties": {
