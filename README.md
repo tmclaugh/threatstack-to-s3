@@ -5,7 +5,7 @@ Takes a Threat Stack web hook request and archives the alert to S3.
 
 ## Deployment
 This service can be deployed to AWS running on Lambda behind AWS API gateway by clicking "Launch Stack".
-[![Launch CloudFormation  Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=threatstack-to-s3&templateURL=https://s3.amazonaws.com/ts-demo-lamba-deploys/threatstack-to-s3.json)
+[![Launch CloudFormation  Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=threatstack-to-s3&templateURL=https://s3.amazonaws.com/ts-demo-lambda-deploys/threatstack-to-s3.json)
 
 ### Permissions
 The host running this service needs the following AWS IAM policy for S3 bucket access where *s3_bucket* is the name of the bucket set by TS_AWS_S3_BUCKET:
