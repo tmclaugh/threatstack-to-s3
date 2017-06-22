@@ -235,7 +235,7 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Code": {
-                    "S3Bucket": "ts-demo-lamba-deploys",
+                    "S3Bucket": {"Ref": "AppS3Bucket"},
                     "S3Key": "threatstack-to-s3.zip"
                 },
                 "Description": "Threat Stack to AWS S3",
@@ -303,7 +303,7 @@
                     "Ref": "AppName"
                 },
                 "FunctionZipFileUrl": {
-                    "Fn::Sub": "https://s3.amazonaws.com/straycat-dhs-org-straycat-lambda-deploys/${AppName}.zip"
+                    "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppName}.zip"
                 },
                 "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
             }
@@ -393,6 +393,11 @@
             "Type": "String",
             "Description": "Path to API endpoint",
             "Default": "/api/v1/s3/alert"
+        },
+        "AppS3Bucket": {
+            "Type": "String",
+            "Description": "S3 bucket of deployable code",
+            "Default": "ts-demo-lambda-deploys"
         },
         "AwsAccountName": {
             "Type": "String",
