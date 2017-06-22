@@ -308,18 +308,6 @@
                 "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
             }
         },
-        "LambdaVersion": {
-            "Type": "AWS::Lambda::Version",
-            "Properties": {
-                "FunctionName": {
-                    "Ref": "LambdaFunction"
-                },
-                "CodeSha256": "%%SHA256%%"
-            },
-            "DependsOn": [
-               "LambdaInvokeUpdater"
-            ]
-        },
         "SnsSubscription": {
             "Type": "AWS::SNS::Subscription",
             "Properties": {
@@ -443,6 +431,16 @@
         "ThreatStackApiKey": {
             "Type": "String",
             "Description": "Threat Stack API key"
+        }
+    },
+    "Outputs": {
+        "LambdaCodeSha256": {
+            "Description": "Lambda code SHA256.",
+            "Value": "%%SHA256%%"
+        },
+        "TravisBuildNumber": {
+            "Description": "Travis build number.",
+            "Value": "%%TRAVIS_BUILD_NUMBER%%"
         }
     },
     "Metadata": {
