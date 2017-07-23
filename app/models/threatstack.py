@@ -7,98 +7,60 @@ import logging
 import requests
 import six
 import sys
+import threatstack
 
 _logger = logging.getLogger(__name__)
 
 THREATSTACK_API_KEY = config.THREATSTACK_API_KEY
 THREATSTACK_BASE_URL = config.THREATSTACK_BASE_URL
 
-class ThreatStackError(AppBaseError):
+class ThreatStackBaseError(AppBaseError):
     '''
     Base Threat Stack error.
     '''
 
-class ThreatStackRequestError(ThreatStackError):
+class ThreatStackAPIError(ThreatStackBaseError):
     '''
-    Threat Stack request communication error.
-    '''
-
-class ThreatStackAPIError(ThreatStackError):
-    '''
-    Threat Stack API error.
+    Base Threat Stack error.
     '''
 
-def is_available():
-    '''
-    Check connectivity to Threat Stack.
+class ThreatStackModel:
+    def __init__(self):
+        '''
+        Interact with Threat Stack via API.
+        '''
+        self._threatstack_client = threatstack.ThreatStack(THREATSTACK_API_KEY)
 
-    Returns a failure if cannot connect to Threat Stack API.  This could be
-    anything from API credential issues to connection failure.
-    '''
+    def is_available(self):
+        '''
+        Check connectivity to Threat Stack.
 
-    alerts_url = '{}/alerts?count=1'.format(THREATSTACK_BASE_URL)
+        Returns a failure if cannot connect to Threat Stack API.  This could be
+        anything from API credential issues to connection failure.
+        '''
 
-    try:
-        resp = requests.get(
-            alerts_url,
-            headers={'Authorization': THREATSTACK_API_KEY}
-        )
+        available = False
+        try:
+            for org in self._threatstack_client.organizations.list():
+                if org:
+                    available = True
+                    break
+        except threatstack.ThreatStackAPIError as e:
+            raise ThreatStackAPIError(e.message)
+        # Module doesn't handle the None response that occurs on bad API key.
+        except TypeError:
+            pass
 
-    except requests.exceptions.RequestException as e:
-        exc_info = sys.exc_info()
-        if sys.version_info >= (3,0,0):
-            raise ThreatStackRequestError(e).with_traceback(exc_info[2])
-        else:
-            six.reraise(
-                ThreatStackRequestError,
-                ThreatStackRequestError(e),
-                exc_info[2]
-            )
+        return available
 
-    if not resp.ok:
-        if 'application/json' in resp.headers.get('Content-Type'):
-            raise ThreatStackAPIError(
-                resp.reason,
-                resp.status_code,
-                resp.json()
-            )
-        else:
-            raise ThreatStackRequestError(resp.reason, resp.status_code)
+    def get_alert_by_id(self, alert_id):
+        '''
+        Retrieve an alert from Threat Stack by alert ID.
+        '''
+        try:
+            resp = self._threatstack_client.alerts.get(alert_id)
 
-    return True
+        except threatstack.ThreatStackAPIError as e:
+            raise ThreatStackAPIError(e)
 
-def get_alert_by_id(alert_id):
-    '''
-    Retrieve an alert from Threat Stack by alert ID.
-    '''
-    alerts_url = '{}/alerts/{}'.format(THREATSTACK_BASE_URL, alert_id)
-
-    try:
-        resp = requests.get(
-            alerts_url,
-            headers={'Authorization': THREATSTACK_API_KEY}
-        )
-
-    except requests.exceptions.RequestException as e:
-        exc_info = sys.exc_info()
-        if sys.version_info >= (3,0,0):
-            raise ThreatStackRequestError(e).with_traceback(exc_info[2])
-        else:
-            six.reraise(
-                ThreatStackRequestError,
-                ThreatStackRequestError(e),
-                exc_info[2]
-            )
-
-    if not resp.ok:
-        if 'application/json' in resp.headers.get('Content-Type'):
-            raise ThreatStackAPIError(
-                resp.reason,
-                resp.status_code,
-                resp.json()
-            )
-        else:
-            raise ThreatStackRequestError(resp.reason, resp.status_code)
-
-    return resp.json()
-
+        return resp
